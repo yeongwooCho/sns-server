@@ -83,7 +83,34 @@ export class PostsController {
     return post;
   }
 
-  // 4) PUT /posts/:id
+  // 4) PATCH /posts/:id
+  @Patch(":id")
+  putPost(
+    @Param("id") id: string,
+    @Body("author") author?: string,
+    @Body("title") title?: string,
+    @Body("content") content?: string
+  ) {
+    const post = posts.find((post) => post.id === +id);
+
+    if (!post) {
+      return new NotFoundException();
+    }
+
+    if (author) {
+      post.author = author;
+    }
+    if (title) {
+      post.title = title;
+    }
+    if (content) {
+      post.content = content;
+    }
+
+    posts = posts.map((prevPost) => prevPost.id === +id ? post : prevPost);
+
+    return post;
+  }
 
   // 5) DELETE /posts/:id
 
