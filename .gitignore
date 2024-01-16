@@ -289,6 +289,14 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/node,webstorm+all,macos
 
+
+
+
+# My Settings
+
 # docker
 docker-compose.yaml
 postgres-data
+
+# my_setting
+my_settings.ts
