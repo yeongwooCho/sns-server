@@ -79,7 +79,7 @@ export class PostsService {
     const post = posts.find((post) => post.id === +id);
 
     if (!post) {
-      return new NotFoundException();
+      throw new NotFoundException();
     }
 
     if (author) {
