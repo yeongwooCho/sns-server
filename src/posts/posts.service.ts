@@ -50,8 +50,8 @@ export class PostsService {
     return posts;
   }
 
-  getPostById(id: string) {
-    const post = posts.find((post) => post.id == +id);
+  getPostById(id: number) {
+    const post = posts.find((post) => post.id == id);
 
     if (!post) {
       throw new NotFoundException();
@@ -75,8 +75,8 @@ export class PostsService {
     return post;
   }
 
-  updatePost(id: string, author?: string, title?: string, content?: string) {
-    const post = posts.find((post) => post.id === +id);
+  updatePost(id: number, author?: string, title?: string, content?: string) {
+    const post = posts.find((post) => post.id === id);
 
     if (!post) {
       throw new NotFoundException();
@@ -92,19 +92,19 @@ export class PostsService {
       post.content = content;
     }
 
-    posts = posts.map((prevPost) => (prevPost.id === +id ? post : prevPost));
+    posts = posts.map((prevPost) => (prevPost.id === id ? post : prevPost));
 
     return post;
   }
 
-  deletePost(id: string) {
-    const post = posts.find((post) => post.id === +id);
+  deletePost(id: number) {
+    const post = posts.find((post) => post.id === id);
 
     if (!post) {
       throw new NotFoundException();
     }
 
-    posts = posts.filter((post) => post.id !== +id);
+    posts = posts.filter((post) => post.id !== id);
 
     return id;
   }

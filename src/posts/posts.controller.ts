@@ -22,7 +22,7 @@ export class PostsController {
   // 2) GET /posts/:id
   @Get(':id')
   getPost(@Param('id') id: string) {
-    return this.postsService.getPostById(id);
+    return this.postsService.getPostById(+id);
   }
 
   // 3) Post /posts
@@ -43,12 +43,12 @@ export class PostsController {
     @Body('title') title?: string,
     @Body('content') content?: string,
   ) {
-    return this.postsService.updatePost(id, author, title, content);
+    return this.postsService.updatePost(+id, author, title, content);
   }
 
   // 5) DELETE /posts/:id
   @Delete(':id')
   deletePost(@Param('id') id: string) {
-    return this.postsService.deletePost(id);
+    return this.postsService.deletePost(+id);
   }
 }
