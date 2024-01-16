@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 export interface PostModel {
   id: number;
@@ -12,27 +12,28 @@ export interface PostModel {
 let posts: PostModel[] = [
   {
     id: 1,
-    author: "newjeans",
-    title: "뉴진스 민지",
-    content: "수리하는 민지",
+    author: 'newjeans',
+    title: '뉴진스 민지',
+    content: '수리하는 민지',
     likeCount: 12345,
-    commentCount: 24139
-  }, {
+    commentCount: 24139,
+  },
+  {
     id: 2,
-    author: "newjeans_official",
-    title: "뉴진스 혜린",
-    content: "노래하는 민지",
+    author: 'newjeans_official',
+    title: '뉴진스 혜린',
+    content: '노래하는 민지',
     likeCount: 11111,
-    commentCount: 44444
+    commentCount: 44444,
   },
   {
     id: 3,
-    author: "newjeans_official",
-    title: "블랙핑크 로제",
-    content: "춤추는 로제",
+    author: 'newjeans_official',
+    title: '블랙핑크 로제',
+    content: '춤추는 로제',
     likeCount: 10000,
-    commentCount: 20000
-  }
+    commentCount: 20000,
+  },
 ];
 
 @Injectable()
@@ -51,34 +52,22 @@ export class PostsService {
     return post;
   }
 
-  createPost(
-    author: string,
-    title: string,
-    content: string
-  ) {
+  createPost(author: string, title: string, content: string) {
     const post: PostModel = {
       id: posts[posts.length - 1].id + 1,
       author,
       title,
       content,
       likeCount: 0,
-      commentCount: 0
+      commentCount: 0,
     };
 
-    posts = [
-      ...posts,
-      post
-    ];
+    posts = [...posts, post];
 
     return post;
   }
 
-  updatePost(
-    id: string,
-    author?: string,
-    title?: string,
-    content?: string
-  ) {
+  updatePost(id: string, author?: string, title?: string, content?: string) {
     const post = posts.find((post) => post.id === +id);
 
     if (!post) {
@@ -95,7 +84,7 @@ export class PostsService {
       post.content = content;
     }
 
-    posts = posts.map((prevPost) => prevPost.id === +id ? post : prevPost);
+    posts = posts.map((prevPost) => (prevPost.id === +id ? post : prevPost));
 
     return post;
   }
