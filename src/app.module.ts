@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmUserOption } from '../my_settings';
 import { PostsModel } from './posts/entities/posts.entity';
 import { UsersModule } from './users/users.module';
+import { UsersModel } from './users/entities/users.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { UsersModule } from './users/users.module';
       password: typeOrmUserOption.password,
       database: typeOrmUserOption.database,
       // 데이터 베이스와 연동될 모델이 추가된다.
-      entities: [PostsModel],
+      entities: [PostsModel, UsersModel],
       // NestJS 에서 작성하는 typeorm 코드와
       // database sync 를 자동으로 맞출 것인가?
       // 데이터의 구조가 갑자기 바뀔 수 있기에
