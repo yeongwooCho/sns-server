@@ -12,11 +12,11 @@ import { PostsModel } from './posts/entities/posts.entity';
     TypeOrmModule.forRoot({
       // 데이터 베이스 타입
       type: 'postgres',
-      host: '127.0.0.1',
-      port: 5432,
+      host: typeOrmUserOption.host,
+      port: typeOrmUserOption.port,
       username: typeOrmUserOption.username,
       password: typeOrmUserOption.password,
-      database: 'postgres',
+      database: typeOrmUserOption.database,
       // 데이터 베이스와 연동될 모델이 추가된다.
       entities: [PostsModel],
       // NestJS 에서 작성하는 typeorm 코드와
