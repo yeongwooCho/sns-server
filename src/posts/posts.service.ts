@@ -30,7 +30,8 @@ export class PostsService {
 
   async createPost(author: string, title: string, content: string) {
     const post = this.postsRepository.create({
-      author,
+      // TODO: author UsersModel 로 타입 변경으로 인한 주석처리
+      // author,
       title,
       content,
       likeCount: 0,
@@ -56,9 +57,10 @@ export class PostsService {
       throw new NotFoundException();
     }
 
-    if (author) {
-      post.author = author;
-    }
+    // TODO: author UsersModel 로 타입 변경으로 인한 주석처리
+    // if (author) {
+    //   post.author = author;
+    // }
     if (title) {
       post.title = title;
     }
