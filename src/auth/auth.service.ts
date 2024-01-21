@@ -1,11 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersModel } from '../users/entities/users.entity';
 import { JWT_SECRET } from '../../my_settings';
+import { UsersService } from '../users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+  ) {}
 
   /**
    * 우리가 만드려는 기능
@@ -66,5 +71,29 @@ export class AuthService {
       accessToken: this.signToken(user, false),
       refreshToken: this.signToken(user, true),
     };
+  }
+
+  async authenticateWithEmailAndPassword(
+    user: Pick<UsersModel, 'email' | 'password'>,
+  ) {
+    // 1. 사용자가 존재하는지 확인(email)
+    const existingUser = await this.usersService.getUserByEmail(user.email);
+
+    if (!existingUser) {
+      throw new UnauthorizedException('존재하지 않는 사용자 압니다.');
+    }
+
+    // 2. 비밀번호가 맞는지 확인
+    // bcrypt.compare(a, b): a를 해쉬로 바꿔서 b와 비교한다.
+    //  a - 입력된 비밀번호(암호화X)
+    //  b - 기존 비밀번호(암호화 된 해쉬 값)
+    const passOk = bcrypt.compare(user.password, existingUser.password);
+
+    if (!passOk) {
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+    }
+
+    // 3. 모두 통과되면 찾은 사용자 정보 반환
+    return existingUser;
   }
 }
