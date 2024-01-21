@@ -11,13 +11,20 @@ export class PostsService {
   ) {}
 
   async getAllPosts() {
-    return this.postsRepository.find();
+    return this.postsRepository.find({
+      relations: {
+        author: true,
+      },
+    });
   }
 
   async getPostById(id: number) {
     const post = await this.postsRepository.findOne({
       where: {
         id,
+      },
+      relations: {
+        author: true,
       },
     });
 
@@ -28,10 +35,11 @@ export class PostsService {
     return post;
   }
 
-  async createPost(author: string, title: string, content: string) {
+  async createPost(authorId: number, title: string, content: string) {
     const post = this.postsRepository.create({
-      // TODO: author UsersModel 로 타입 변경으로 인한 주석처리
-      // author,
+      author: {
+        id: authorId,
+      },
       title,
       content,
       likeCount: 0,
@@ -41,12 +49,7 @@ export class PostsService {
     return await this.postsRepository.save(post);
   }
 
-  async updatePost(
-    id: number,
-    author?: string,
-    title?: string,
-    content?: string,
-  ) {
+  async updatePost(id: number, title?: string, content?: string) {
     const post = await this.postsRepository.findOne({
       where: {
         id,
@@ -57,10 +60,6 @@ export class PostsService {
       throw new NotFoundException();
     }
 
-    // TODO: author UsersModel 로 타입 변경으로 인한 주석처리
-    // if (author) {
-    //   post.author = author;
-    // }
     if (title) {
       post.title = title;
     }
