@@ -4,6 +4,7 @@ import { UsersModel } from '../users/entities/users.entity';
 import { JWT_SECRET } from '../../my_settings';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import { UsersModule } from '../users/users.module';
 
 @Injectable()
 export class AuthService {
@@ -95,5 +96,12 @@ export class AuthService {
 
     // 3. 모두 통과되면 찾은 사용자 정보 반환
     return existingUser;
+  }
+
+  async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
+    // 에러가 발생하지 않고 여기까지 도착하면 인증이 완료된 것이다.
+    const existingUser = await this.authenticateWithEmailAndPassword(user);
+
+    return this.loginUser(existingUser);
   }
 }
