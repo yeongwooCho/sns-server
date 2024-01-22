@@ -4,7 +4,6 @@ import { UsersModel } from '../users/entities/users.entity';
 import { HASH_ROUNDS, JWT_SECRET } from '../../my_settings';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { UsersModule } from '../users/users.module';
 
 @Injectable()
 export class AuthService {
@@ -43,6 +42,43 @@ export class AuthService {
    * 6) 토큰이 만료되면 각각의 토큰을 새로 발급 받을 수 있는 엔드포인트에 요청을 해서
    * 새로운 토큰을 발급받고 새로운 토큰을 사용해서 private route 에 접근한다.
    */
+
+  /**
+   * Header로 부터 토큰을 받을때
+   * {authorization: 'Basic {token}'}
+   * {authorization: 'Bearer {token}'}
+   * header 에는 'Basic {token}' 아니면 'Bearer {token}'가 들어간다.
+   * 사용자의 요청은 언제나 잘못될 수 있다. 항상 까다롭게 체크해야 한다.
+   */
+  extractTokenFromHeader(header: string, isBearer: boolean) {
+    const splitToken = header.split(' ');
+
+    const prefix = isBearer ? 'Bearer' : 'Basic';
+
+    if (splitToken.length !== 2 || splitToken[0] !== prefix) {
+      throw new UnauthorizedException('잘못된 토큰입니다.');
+    }
+
+    return splitToken[1];
+  }
+
+  decodeBasicToken(base64String: string) {
+    const decoded = Buffer.from(base64String, 'base64').toString('utf8');
+
+    const split = decoded.split(':');
+
+    if (split.length !== 2) {
+      throw new UnauthorizedException('잘못된 유형의 토큰입니다.');
+    }
+
+    const email = split[0];
+    const password = split[1];
+
+    return {
+      email,
+      password,
+    };
+  }
 
   /**
    * 우리가 만드려는 기능
