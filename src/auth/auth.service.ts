@@ -155,7 +155,7 @@ export class AuthService {
     // bcrypt.compare(a, b): a를 해쉬로 바꿔서 b와 비교한다.
     //  a - 입력된 비밀번호(암호화X)
     //  b - 기존 비밀번호(암호화 된 해쉬 값)
-    const passOk = bcrypt.compare(user.password, existingUser.password);
+    const passOk = await bcrypt.compare(user.password, existingUser.password);
 
     if (!passOk) {
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
