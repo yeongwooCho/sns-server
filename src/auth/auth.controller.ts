@@ -5,8 +5,30 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('token/access')
+  createTokenAccess(@Headers('authorization') rawString: string) {
+    const token = this.authService.extractTokenFromHeader(rawString, true);
+    const newToken = this.authService.rotateToken(token, false);
+
+    // { accessToken: {token} }
+    return {
+      accessToken: newToken,
+    };
+  }
+
+  @Post('token/refresh')
+  createTokenRefresh(@Headers('authorization') rawString: string) {
+    const token = this.authService.extractTokenFromHeader(rawString, true);
+    const newToken = this.authService.rotateToken(token, true);
+
+    // { refreshToken: {token} }
+    return {
+      refreshToken: newToken,
+    };
+  }
+
   @Post('login/email')
-  loginEmail(@Headers('authorization') rawToken: string) {
+  postLoginEmail(@Headers('authorization') rawToken: string) {
     // token은 현재 base64.encode(email:password) 상태이다.
     const token = this.authService.extractTokenFromHeader(rawToken, false);
 
@@ -16,7 +38,7 @@ export class AuthController {
   }
 
   @Post('register/email')
-  registerEmail(
+  postRegisterEmail(
     @Body('nickname') nickname: string,
     @Body('email') email: string,
     @Body('password') password: string,
