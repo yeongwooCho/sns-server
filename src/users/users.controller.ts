@@ -23,18 +23,18 @@ export class UsersController {
     return this.usersService.getUserById(+id);
   }
 
-  @Post()
-  postUser(
-    @Body('nickname') nickname: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
-    return this.usersService.createUser({
-      nickname,
-      email,
-      password,
-    });
-  }
+  // @Post()
+  // postUser(
+  //   @Body('nickname') nickname: string,
+  //   @Body('email') email: string,
+  //   @Body('password') password: string,
+  // ) {
+  //   return this.usersService.createUser({
+  //     nickname,
+  //     email,
+  //     password,
+  //   });
+  // }
 
   @Patch(':id')
   patchUser(
