@@ -1,16 +1,29 @@
-import { Body, Controller, Headers, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   MaxLengthPipe,
   MinLengthPipe,
   PasswordPipe,
 } from './pipe/password.pipe';
+import { BasicTokenGuard } from './guard/basic-token.guard';
+import {
+  AccessTokenGuard,
+  RefreshTokenGuard,
+} from './guard/bearer-token.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('token/access')
+  @UseGuards(RefreshTokenGuard)
   createTokenAccess(@Headers('authorization') rawString: string) {
     const token = this.authService.extractTokenFromHeader(rawString, true);
     const newToken = this.authService.rotateToken(token, false);
@@ -22,6 +35,7 @@ export class AuthController {
   }
 
   @Post('token/refresh')
+  @UseGuards(RefreshTokenGuard)
   createTokenRefresh(@Headers('authorization') rawString: string) {
     const token = this.authService.extractTokenFromHeader(rawString, true);
     const newToken = this.authService.rotateToken(token, true);
@@ -33,7 +47,8 @@ export class AuthController {
   }
 
   @Post('login/email')
-  postLoginEmail(@Headers('authorization') rawToken: string) {
+  @UseGuards(BasicTokenGuard)
+  postLoginEmail(@Headers('authorization') rawToken: string, @Request() req) {
     // token은 현재 base64.encode(email:password) 상태이다.
     const token = this.authService.extractTokenFromHeader(rawToken, false);
 
