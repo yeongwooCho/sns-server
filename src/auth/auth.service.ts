@@ -109,7 +109,7 @@ export class AuthService {
     }
 
     return this.signToken(
-      { email: decoded.email, id: decoded.id },
+      { email: decoded.email, id: decoded.sub },
       isRefreshToken,
     );
   }
