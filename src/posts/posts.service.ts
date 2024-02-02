@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
+import { PaginatePostDto } from './dto/paginate-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +19,35 @@ export class PostsService {
         author: true,
       },
     });
+  }
+
+  // 1) 오른 차순으로 정렬하는 Pagination 만 구현
+  async paginatePosts(dto: PaginatePostDto) {
+    const posts = await this.postsRepository.find({
+      where: {
+        id: MoreThan(dto.where__id_more_than ?? 0),
+      },
+      order: {
+        createdAt: dto.order__createdAt,
+      },
+      take: dto.take,
+    });
+
+    /**
+     * Response
+     *
+     * data: Date[],
+     * cursor: {
+     *   after: 마지막 Data 의 ID
+     * },
+     * count: 응답한 데이터의 갯수
+     * next: 다음 요청을 할때 사용할 URL
+     */
+
+    return {
+      // 현재까지 만든 기능
+      data: posts,
+    };
   }
 
   async getPostById(id: number) {
