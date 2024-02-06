@@ -7,6 +7,7 @@ import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { HOST, PROTOCOL } from '../common/const/env.const';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { take } from 'rxjs';
 
 @Injectable()
 export class PostsService {
@@ -32,8 +33,16 @@ export class PostsService {
     }
   }
 
-  // 1) 오른 차순으로 정렬하는 Pagination 만 구현
   async paginatePosts(dto: PaginatePostDto) {
+    if (dto.page) {
+      // page 가 0 인 경우는 없다. 1부터 시작한다.
+      return this.pagePaginatePosts(dto);
+    } else {
+      return this.cursorPaginatePosts(dto);
+    }
+  }
+
+  async cursorPaginatePosts(dto: PaginatePostDto) {
     const where: FindOptionsWhere<PostsModel> = {};
 
     if (dto.where__id_less_than) {
@@ -105,6 +114,27 @@ export class PostsService {
       },
       count: posts.length,
       next: nextUrl?.toString() ?? null,
+    };
+  }
+
+  async pagePaginatePosts(dto: PaginatePostDto) {
+    /**
+     * data: Date[],
+     * total: number,
+     */
+
+    const [posts, count] = await this.postsRepository.findAndCount({
+      // page 는 1부터 시작한다.
+      skip: dto.take * (dto.page - 1),
+      order: {
+        createdAt: dto.order__createdAt,
+      },
+      take: dto.take,
+    });
+
+    return {
+      data: posts,
+      total: count,
     };
   }
 
