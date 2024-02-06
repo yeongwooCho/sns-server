@@ -47,7 +47,10 @@ export class PostsService {
      * 해당되는 포스트가 0개 이상이면 마지막 포스트를 가져오고
      * 아니면 null 을 반환한다.
      */
-    const lastItem = posts.length > 0 ? posts[posts.length - 1] : null;
+    const lastItem =
+      posts.length > 0 && posts.length === dto.take
+        ? posts[posts.length - 1]
+        : null;
 
     const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`);
 
