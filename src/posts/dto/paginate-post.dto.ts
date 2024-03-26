@@ -9,6 +9,8 @@ export class PaginatePostDto {
   // 이전 마지막 데이터의 ID
   // 이 프로퍼티에 입력된 ID 보다 높은 ID 부터 값을 가져오기
   // @Type(() => Number)
+  // @Type(() => Number) 을 사용해서 string -> number로 변환 해야 하지만
+  // 이 부분은 class-transformer가 자동으로 처리해주기 때문에 생략된다.
   @IsNumber()
   @IsOptional()
   // 없으면 0으로 처리

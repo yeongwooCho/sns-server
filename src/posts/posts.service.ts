@@ -16,6 +16,7 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsModel>,
   ) {}
 
+  // 모든 post 를 가져오는 기능을 paginate 로 대체 완료
   async getAllPosts() {
     return this.postsRepository.find({
       relations: {
@@ -24,6 +25,7 @@ export class PostsService {
     });
   }
 
+  // test 를 위한 post 100개 랜덤 생성 기능
   async generatePosts(userId: number) {
     for (let i = 0; i < 100; i++) {
       await this.createPost(userId, {
@@ -33,6 +35,7 @@ export class PostsService {
     }
   }
 
+  // getPosts route 를 paginate 로 대체 완료
   async paginatePosts(dto: PaginatePostDto) {
     if (dto.page) {
       // page 가 0 인 경우는 없다. 1부터 시작한다.

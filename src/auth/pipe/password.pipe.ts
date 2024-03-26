@@ -5,6 +5,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 
+/**
+ * 다음 Pipe 는 class-validator 를 사용해서 대체 됨.
+ */
 @Injectable()
 export class PasswordPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata): any {

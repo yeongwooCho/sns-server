@@ -38,7 +38,9 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
   providers: [
     AppService,
     {
+      // 모든 요청에 대해 class-transformer 를 적용한다.
       provide: APP_INTERCEPTOR,
+      // class-transformer @Expose() 를 사용한 것에 대해 일괄 적용한다.
       useClass: ClassSerializerInterceptor,
     },
   ],
