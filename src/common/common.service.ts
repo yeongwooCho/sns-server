@@ -190,7 +190,9 @@ export class CommonService {
 
       // FILTER_MAPPER 에서 해당되는 operator 함수를 찾아서 적용
       // 함수 뒤에 ()를 붙이면 함수가 실행된다. 이때 파라미터를 전달한 것이다.
-      if (values.length > 1) {
+      if (operator === 'i_like') {
+        options[field] = FILTER_MAPPER[operator](`%${value}%`);
+      } else if (values.length > 1) {
         options[field] = FILTER_MAPPER[operator](...values);
       } else {
         options[field] = FILTER_MAPPER[operator](value);
