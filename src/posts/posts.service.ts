@@ -7,13 +7,14 @@ import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { HOST, PROTOCOL } from '../common/const/env.const';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
-import { take } from 'rxjs';
+import { CommonService } from '../common/common.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
   ) {}
 
   // 모든 post 를 가져오는 기능을 paginate 로 대체 완료
@@ -37,12 +38,19 @@ export class PostsService {
 
   // getPosts route 를 paginate 로 대체 완료
   async paginatePosts(dto: PaginatePostDto) {
-    if (dto.page) {
-      // page 가 0 인 경우는 없다. 1부터 시작한다.
-      return this.pagePaginatePosts(dto);
-    } else {
-      return this.cursorPaginatePosts(dto);
-    }
+    return this.commonService.paginate<PostsModel>(
+      dto,
+      this.postsRepository,
+      {},
+      'posts',
+    );
+
+    // if (dto.page) {
+    //   // page 가 0 인 경우는 없다. 1부터 시작한다.
+    //   return this.pagePaginatePosts(dto);
+    // } else {
+    //   return this.cursorPaginatePosts(dto);
+    // }
   }
 
   async cursorPaginatePosts(dto: PaginatePostDto) {
@@ -82,7 +90,10 @@ export class PostsService {
        */
       for (const key of Object.keys(dto)) {
         if (dto[key]) {
-          if (key !== 'where__id__more_than' && key !== 'where__id__less_than') {
+          if (
+            key !== 'where__id__more_than' &&
+            key !== 'where__id__less_than'
+          ) {
             nextUrl.searchParams.append(key, dto[key]);
           }
         }
