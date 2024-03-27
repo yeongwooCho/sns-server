@@ -13,11 +13,11 @@ export class BasePaginationDto {
   @IsNumber()
   @IsOptional()
   // 없으면 0으로 처리
-  where__id_more_than?: number;
+  where__id__more_than?: number;
 
   @IsNumber()
   @IsOptional()
-  where__id_less_than?: number;
+  where__id__less_than?: number;
 
   // 정렬
   // createAt -> 생성된 시간의 내림차/오름차 순으로 정렬;
