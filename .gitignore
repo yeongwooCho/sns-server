@@ -300,3 +300,4 @@ postgres-data
 
 # my_setting
 my_settings.ts
+env/*.env
