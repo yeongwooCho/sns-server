@@ -1,3 +1,8 @@
 import { BasePaginationDto } from '../../common/dto/base-pagination.dto';
+import { IsNumber, IsOptional } from 'class-validator';
 
-export class PaginatePostDto extends BasePaginationDto {}
+export class PaginatePostDto extends BasePaginationDto {
+  @IsNumber()
+  @IsOptional()
+  where__likeCount__more_than: number;
+}
