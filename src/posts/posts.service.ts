@@ -1,12 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post-dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
-import { HOST, PROTOCOL } from '../common/const/env.const';
-import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 import { CommonService } from '../common/common.service';
 
 @Injectable()
@@ -41,7 +39,12 @@ export class PostsService {
     return this.commonService.paginate<PostsModel>(
       dto,
       this.postsRepository,
-      {},
+      {
+        relations: {
+          author: true,
+        },
+        // relations: ['author'],
+      },
       'posts',
     );
   }
