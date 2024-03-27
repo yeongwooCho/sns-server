@@ -25,7 +25,19 @@ export class CommonService {
     dto: BasePaginationDto,
     repository: Repository<T>,
     overrideFindOptions: FindManyOptions<T> = {},
-  ) {}
+  ) {
+    const findOptions = this.composeFindOptions<T>(dto);
+
+    const [data, count] = await repository.findAndCount({
+      ...findOptions,
+      ...overrideFindOptions,
+    });
+
+    return {
+      data: data,
+      total: count,
+    };
+  }
   private async cursorPaginate<T extends BaseModel>(
     dto: BasePaginationDto,
     repository: Repository<T>,
