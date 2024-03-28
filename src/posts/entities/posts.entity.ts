@@ -1,8 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { UsersModel } from '../../users/entities/users.entity';
 import { BaseModel } from '../../common/entity/base.entity';
 import { IsString } from 'class-validator';
 import { stringValidationMessage } from '../../common/validation-message/string-validation.message';
+import { Transform } from 'class-transformer';
+import { join } from 'path';
+import { POSTS_FOLDER_PATH_WITHOUT_ROOT } from '../../common/const/path.const';
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -26,6 +29,10 @@ export class PostsModel extends BaseModel {
 
   @Column({
     nullable: true,
+  })
+  @Transform(({ value }) => {
+    // return value ? `/${join(POSTS_FOLDER_PATH_WITHOUT_ROOT, value)}` : null;
+    return value && `/${join(POSTS_FOLDER_PATH_WITHOUT_ROOT, value)}`;
   })
   image?: string;
 
