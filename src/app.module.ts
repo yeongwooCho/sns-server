@@ -3,24 +3,36 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmUserOption } from '../my_settings';
 import { PostsModel } from './posts/entities/posts.entity';
 import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entities/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
+import * as process from 'process';
+import {
+  ENV_DB_DATABASE_KEY,
+  ENV_DB_HOST_KEY,
+  ENV_DB_PASSWORD_KEY,
+  ENV_DB_PORT_KEY,
+  ENV_DB_USERNAME_KEY,
+} from './common/const/env-keys.const';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: 'env/development.env',
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       // 데이터 베이스 타입
       type: 'postgres',
-      host: typeOrmUserOption.host,
-      port: typeOrmUserOption.port,
-      username: typeOrmUserOption.username,
-      password: typeOrmUserOption.password,
-      database: typeOrmUserOption.database,
+      host: process.env[ENV_DB_HOST_KEY],
+      port: parseInt(process.env[ENV_DB_PORT_KEY]),
+      username: process.env[ENV_DB_USERNAME_KEY],
+      password: process.env[ENV_DB_PASSWORD_KEY],
+      database: process.env[ENV_DB_DATABASE_KEY],
       // 데이터 베이스와 연동될 모델이 추가된다.
       entities: [PostsModel, UsersModel],
       // NestJS 에서 작성하는 typeorm 코드와
