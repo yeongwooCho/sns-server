@@ -59,7 +59,9 @@ export class PostsService {
       this.postsRepository,
       {
         relations: {
+          // ['author', 'images'] 와 같이 배열로도 가능
           author: true,
+          images: true,
         },
         // relations: ['author'],
       },
@@ -74,6 +76,7 @@ export class PostsService {
       },
       relations: {
         author: true,
+        images: true,
       },
     });
 
