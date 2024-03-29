@@ -15,9 +15,12 @@ import {
   POSTS_FOLDER_PATH,
   PUBLIC_FOLDER_NAME,
   PUBLIC_FOLDER_PATH,
-  TEMP_FOLDER_NAME, TEMP_FOLDER_PATH
-} from "../common/const/path.const";
+  TEMP_FOLDER_NAME,
+  TEMP_FOLDER_PATH,
+} from '../common/const/path.const';
 import { promises } from 'fs';
+import { CreatePostImageDto } from './image/dto/create-image.dto';
+import { ImageModel } from '../common/entity/image.entity';
 
 @Injectable()
 export class PostsService {
@@ -25,6 +28,8 @@ export class PostsService {
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
     private readonly commonService: CommonService,
+    @InjectRepository(ImageModel)
+    private readonly imageRepository: Repository<ImageModel>,
   ) {}
 
   // 모든 post 를 가져오는 기능을 paginate 로 대체 완료
@@ -42,6 +47,7 @@ export class PostsService {
       await this.createPost(userId, {
         title: `임의로 생성된 포스트 제목 ${i}`,
         content: `임의로 생성된 포스트 내용 ${i}`,
+        images: [],
       });
     }
   }
@@ -78,9 +84,9 @@ export class PostsService {
     return post;
   }
 
-  async createPostImage(dto: CreatePostDto) {
+  async createPostImage(dto: CreatePostImageDto) {
     // dto.image 값을 기반으로 파일의 경로를 생성한다.
-    const tempFilePath = join(TEMP_FOLDER_PATH, dto.image);
+    const tempFilePath = join(TEMP_FOLDER_PATH, dto.path);
 
     try {
       // fs.promises.access 는 파일이 존재하지 않으면 에러를 발생시킨다.
@@ -95,10 +101,15 @@ export class PostsService {
     // 새로 이동할 포스트 폴더의 경로 + 이미지 경로
     const newFilePath = join(POSTS_FOLDER_PATH, fileName);
 
+    // save
+    const result = await this.imageRepository.save({
+      ...dto,
+    });
+
     await promises.rename(tempFilePath, newFilePath);
 
-    // 이상 없으면 true를 반환
-    return true;
+    // 이상 없으면 image entity 를 반환한다.
+    return result;
   }
 
   async createPost(authorId: number, postDto: CreatePostDto) {
@@ -109,6 +120,7 @@ export class PostsService {
       ...postDto,
       likeCount: 0,
       commentCount: 0,
+      images: [],
     });
 
     return await this.postsRepository.save(post);
