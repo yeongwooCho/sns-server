@@ -3,7 +3,10 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { IsEnum, IsIn, IsInt, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { join } from 'path';
-import { POSTS_FOLDER_PATH } from '../const/path.const';
+import {
+  POSTS_FOLDER_PATH,
+  POSTS_FOLDER_PATH_WITHOUT_ROOT,
+} from '../const/path.const';
 import { PostsModel } from '../../posts/entities/posts.entity';
 
 export enum ImageModelType {
@@ -35,7 +38,7 @@ export class ImageModel extends BaseModel {
   @IsString()
   @Transform(({ value, obj }) => {
     if (obj.type === ImageModelType.POST_IMAGE) {
-      return join(POSTS_FOLDER_PATH, value);
+      return join('/', POSTS_FOLDER_PATH_WITHOUT_ROOT, value);
     } else {
       return value;
     }
