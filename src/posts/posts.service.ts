@@ -21,6 +21,7 @@ import {
 import { promises } from 'fs';
 import { CreatePostImageDto } from './image/dto/create-image.dto';
 import { ImageModel } from '../common/entity/image.entity';
+import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.const';
 
 @Injectable()
 export class PostsService {
@@ -58,12 +59,7 @@ export class PostsService {
       dto,
       this.postsRepository,
       {
-        relations: {
-          // ['author', 'images'] 와 같이 배열로도 가능
-          author: true,
-          images: true,
-        },
-        // relations: ['author'],
+        ...DEFAULT_POST_FIND_OPTIONS,
       },
       'posts',
     );
@@ -71,12 +67,9 @@ export class PostsService {
 
   async getPostById(id: number) {
     const post = await this.postsRepository.findOne({
+      ...DEFAULT_POST_FIND_OPTIONS,
       where: {
         id,
-      },
-      relations: {
-        author: true,
-        images: true,
       },
     });
 
