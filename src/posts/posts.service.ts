@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -80,36 +80,16 @@ export class PostsService {
     return post;
   }
 
-  async createPostImage(dto: CreatePostImageDto) {
-    // dto.image 값을 기반으로 파일의 경로를 생성한다.
-    const tempFilePath = join(TEMP_FOLDER_PATH, dto.path);
-
-    try {
-      // fs.promises.access 는 파일이 존재하지 않으면 에러를 발생시킨다.
-      await promises.access(tempFilePath);
-    } catch (error) {
-      throw new BadRequestException('존재하지 않는 파일입니다.');
-    }
-
-    // 파일의 이름만 가져온다.
-    const fileName = basename(tempFilePath);
-
-    // 새로 이동할 포스트 폴더의 경로 + 이미지 경로
-    const newFilePath = join(POSTS_FOLDER_PATH, fileName);
-
-    // save
-    const result = await this.imageRepository.save({
-      ...dto,
-    });
-
-    await promises.rename(tempFilePath, newFilePath);
-
-    // 이상 없으면 image entity 를 반환한다.
-    return result;
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<PostsModel>(PostsModel)
+      : this.postsRepository;
   }
 
-  async createPost(authorId: number, postDto: CreatePostDto) {
-    const post = this.postsRepository.create({
+  async createPost(authorId: number, postDto: CreatePostDto, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    const post = repository.create({
       author: {
         id: authorId,
       },
@@ -119,7 +99,7 @@ export class PostsService {
       images: [],
     });
 
-    return await this.postsRepository.save(post);
+    return await repository.save(post);
   }
 
   async updatePost(id: number, postDto: UpdatePostDto) {
