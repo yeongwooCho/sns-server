@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { UsersModel } from '../../users/entities/users.entity';
 import { BaseModel } from '../../common/entity/base.entity';
 import { IsString } from 'class-validator';
@@ -6,6 +6,7 @@ import { stringValidationMessage } from '../../common/validation-message/string-
 import { Transform } from 'class-transformer';
 import { join } from 'path';
 import { POSTS_FOLDER_PATH_WITHOUT_ROOT } from '../../common/const/path.const';
+import { ImageModel } from '../../common/entity/image.entity';
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -27,18 +28,12 @@ export class PostsModel extends BaseModel {
   })
   content: string;
 
-  @Column({
-    nullable: true,
-  })
-  @Transform(({ value }) => {
-    // return value ? `/${join(POSTS_FOLDER_PATH_WITHOUT_ROOT, value)}` : null;
-    return value && `/${join(POSTS_FOLDER_PATH_WITHOUT_ROOT, value)}`;
-  })
-  image?: string;
-
   @Column()
   likeCount: number;
 
   @Column()
   commentCount: number;
+
+  @OneToMany(() => ImageModel, (image) => image.post)
+  images: ImageModel[];
 }
