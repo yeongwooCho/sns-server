@@ -41,9 +41,9 @@ export class PostsController {
   // 1) GET /posts
   @Get()
   @UseInterceptors(LogInterceptor)
-  @UseFilters(HttpExceptionFilter)
+  // @UseFilters(HttpExceptionFilter)
   getPosts(@Query() query: PaginatePostDto) {
-    throw new BadRequestException('테스트용 에러 발생');
+    // throw new BadRequestException('테스트용 에러 발생');
 
     return this.postsService.paginatePosts(query);
   }
