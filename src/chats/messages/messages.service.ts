@@ -7,7 +7,7 @@ import { PaginateMessageDto } from './dto/paginate-message.dto';
 import { CreateMessagesDto } from './dto/create-messages.dto';
 
 @Injectable()
-export class ChatsMessagesService {
+export class MessagesService {
   constructor(
     @InjectRepository(MessagesModel)
     private readonly messagesRepository: Repository<MessagesModel>,
