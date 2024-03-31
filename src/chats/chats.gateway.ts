@@ -35,6 +35,15 @@ export class ChatsGateway implements OnGatewayConnection {
     @MessageBody() message: { chatId: number; message: string },
     @ConnectedSocket() socket: Socket,
   ) {
-    this.server.in(message.chatId.toString()).emit('receive_message', message);
+    // room에 있는 모든 클라이언트에게 메시지를 전송한다.
+    // this.server 은 서버 전체에 보내는 것을 의미한다.
+    // this.server
+    //   .in(message.chatId.toString())
+    //   .emit('receive_message', message.message);
+
+    // room에 있는 나를 제외한 모든 클라이언트에게 메시지를 전송한다.
+    socket
+      .to(message.chatId.toString())
+      .emit('receive_message', message.message);
   }
 }
