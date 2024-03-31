@@ -11,13 +11,18 @@ import { Server, Socket } from 'socket.io';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatsService } from './chats.service';
 import { EnterChatDto } from './dto/enter-chat.dto';
+import { CreateMessagesDto } from './messages/dto/create-messages.dto';
+import { MessagesService } from './messages/messages.service';
 
 @WebSocketGateway({
   // ws://localhost:3000/chats
   namespace: 'chats',
 })
 export class ChatsGateway implements OnGatewayConnection {
-  constructor(private readonly chatsService: ChatsService) {}
+  constructor(
+    private readonly chatsService: ChatsService,
+    private readonly messagesService: MessagesService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -54,19 +59,23 @@ export class ChatsGateway implements OnGatewayConnection {
 
   // socket.on('send_message', (message) => { console.log(message); });
   @SubscribeMessage('send_message')
-  sendMessage(
-    @MessageBody() message: { chatId: number; message: string },
+  async sendMessage(
+    @MessageBody() dto: CreateMessagesDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    // room에 있는 모든 클라이언트에게 메시지를 전송한다.
-    // this.server 은 서버 전체에 보내는 것을 의미한다.
-    // this.server
-    //   .in(message.chatId.toString())
-    //   .emit('receive_message', message.message);
+    const chatExists = await this.chatsService.checkIfChatExists(dto.chatId);
+    if (!chatExists) {
+      throw new WsException({
+        code: 100,
+        message: `존재하지 않는 chat 입니다. chatId: ${dto.chatId}`,
+      });
+    }
+
+    const message = await this.messagesService.createMessage(dto);
 
     // room에 있는 나를 제외한 모든 클라이언트에게 메시지를 전송한다.
     socket
-      .to(message.chatId.toString())
+      .to(message.chat.id.toString())
       .emit('receive_message', message.message);
   }
 }
