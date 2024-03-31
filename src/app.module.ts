@@ -28,6 +28,7 @@ import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 import { ImageModel } from './common/entity/image.entity';
 import { LogMiddle } from './common/middle/log.middle';
 import { ChatsModule } from './chats/chats.module';
+import { ChatsModel } from "./chats/entity/chats.entity";
 
 @Module({
   imports: [
@@ -44,7 +45,7 @@ import { ChatsModule } from './chats/chats.module';
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_DATABASE_KEY],
       // 데이터 베이스와 연동될 모델이 추가된다.
-      entities: [PostsModel, UsersModel, ImageModel],
+      entities: [PostsModel, UsersModel, ImageModel, ChatsModel],
       // NestJS 에서 작성하는 typeorm 코드와
       // database sync 를 자동으로 맞출 것인가?
       // 데이터의 구조가 갑자기 바뀔 수 있기에
