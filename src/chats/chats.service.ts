@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { CommonService } from '../common/common.service';
 import { PaginateChatDto } from './dto/paginate-chat.dto';
+import { EnterChatDto } from './dto/enter-chat.dto';
 
 @Injectable()
 export class ChatsService {
@@ -36,6 +37,14 @@ export class ChatsService {
     return await this.chatsRepository.find({
       where: {
         id: chat.id,
+      },
+    });
+  }
+
+  async checkIfChatExists(chatId: number) {
+    return await this.chatsRepository.exists({
+      where: {
+        id: chatId,
       },
     });
   }
