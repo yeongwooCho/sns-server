@@ -14,6 +14,10 @@ export class MessagesController {
           id,
         },
       },
+      relations: {
+        chat: true,
+        author: true,
+      },
     });
   }
 }
