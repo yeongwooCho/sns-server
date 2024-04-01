@@ -7,7 +7,7 @@ import {
   POSTS_FOLDER_PATH,
   POSTS_FOLDER_PATH_WITHOUT_ROOT,
 } from '../const/path.const';
-import { PostsModel } from '../../posts/entities/posts.entity';
+import { PostsModel } from '../../posts/entity/posts.entity';
 
 export enum ImageModelType {
   POST_IMAGE = 'POST_IMAGE',
