@@ -7,6 +7,7 @@ import { Transform } from 'class-transformer';
 import { join } from 'path';
 import { POSTS_FOLDER_PATH_WITHOUT_ROOT } from '../../common/const/path.const';
 import { ImageModel } from '../../common/entity/image.entity';
+import { CommentsModel } from "../comments/entity/comments.entity";
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -36,4 +37,7 @@ export class PostsModel extends BaseModel {
 
   @OneToMany(() => ImageModel, (image) => image.post)
   images: ImageModel[];
+
+  @OneToMany(() => CommentsModel, (comment) => comment.post)
+  comments: CommentsModel;
 }
