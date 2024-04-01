@@ -79,7 +79,7 @@ export class ChatsGateway implements OnGatewayConnection {
   @SubscribeMessage('enter_chat')
   async enterChat(
     @MessageBody() data: EnterChatDto,
-    @ConnectedSocket() socket: Socket,
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
   ) {
     console.log(`enter chat called: ${data.chatIds}`);
 
@@ -114,7 +114,7 @@ export class ChatsGateway implements OnGatewayConnection {
   @SubscribeMessage('send_message')
   async sendMessage(
     @MessageBody() dto: CreateMessagesDto,
-    @ConnectedSocket() socket: Socket,
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
   ) {
     // socket.on('send_message', (message) => { console.log(message); });
     const chatExists = await this.chatsService.checkIfChatExists(dto.chatId);
@@ -125,7 +125,10 @@ export class ChatsGateway implements OnGatewayConnection {
       });
     }
 
-    const message = await this.messagesService.createMessage(dto);
+    const message = await this.messagesService.createMessage(
+      dto,
+      socket.user.id,
+    );
 
     // room에 있는 나를 제외한 모든 클라이언트에게 메시지를 전송한다.
     socket
