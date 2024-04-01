@@ -53,7 +53,6 @@ export class ChatsGateway implements OnGatewayConnection {
     }),
   )
   @UseFilters(SocketCatchHttpExceptionFilter)
-  @UseGuards(SocketBearerTokenGuard)
   @SubscribeMessage('create_chat')
   async createChat(
     @MessageBody() data: CreateChatDto,
@@ -75,7 +74,6 @@ export class ChatsGateway implements OnGatewayConnection {
     }),
   )
   @UseFilters(SocketCatchHttpExceptionFilter)
-  @UseGuards(SocketBearerTokenGuard)
   @SubscribeMessage('enter_chat')
   async enterChat(
     @MessageBody() data: EnterChatDto,
@@ -110,7 +108,6 @@ export class ChatsGateway implements OnGatewayConnection {
     }),
   )
   @UseFilters(SocketCatchHttpExceptionFilter)
-  @UseGuards(SocketBearerTokenGuard)
   @SubscribeMessage('send_message')
   async sendMessage(
     @MessageBody() dto: CreateMessagesDto,
