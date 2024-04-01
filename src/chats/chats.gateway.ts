@@ -20,8 +20,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { SocketCatchHttpExceptionFilter } from '../common/exception-filter/socket-catch-http.exception-filter';
-import { SocketBearerTokenGuard } from '../auth/guard/socket/socket-bearer-token.guard';
 import { UsersModel } from '../users/entities/users.entity';
+import { AuthService } from '../auth/auth.service';
+import { UsersService } from '../users/users.service';
 
 @WebSocketGateway({
   // ws://localhost:3000/chats
@@ -31,13 +32,38 @@ export class ChatsGateway implements OnGatewayConnection {
   constructor(
     private readonly chatsService: ChatsService,
     private readonly messagesService: MessagesService,
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
   ) {}
 
   @WebSocketServer()
   server: Server;
 
-  handleConnection(socket: Socket) {
+  async handleConnection(socket: Socket & { user: UsersModel }) {
     console.log(`on connect called: ${socket.id}`);
+
+    const headers = socket.handshake.headers;
+
+    const rawToken = headers['authorization'];
+
+    if (!rawToken) {
+      socket.disconnect();
+    }
+
+    try {
+      const token = this.authService.extractTokenFromHeader(rawToken, true);
+
+      // payload 정보를 가져올 수 있다.
+      const payload = this.authService.verifyToken(token);
+      const user = await this.usersService.getUserByEmail(payload.email);
+
+      // REST API 였으면 request 에 넣어줬을 것이다.
+      socket.user = user;
+
+      return true;
+    } catch (e) {
+      socket.disconnect();
+    }
   }
 
   @UsePipes(
