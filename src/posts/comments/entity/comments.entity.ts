@@ -7,7 +7,7 @@ import { IsNumber, IsString } from 'class-validator';
 
 @Entity()
 export class CommentsModel extends BaseModel {
-  @ManyToOne(() => UsersModel, (author) => author.comments)
+  @ManyToOne(() => UsersModel, (author) => author.postComments)
   author: UsersModel;
 
   @ManyToOne(() => PostsModel, (post) => post.comments)
@@ -19,7 +19,9 @@ export class CommentsModel extends BaseModel {
   })
   comment: string;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   @IsNumber()
   likeCount: number;
 }

@@ -91,8 +91,8 @@ export class UsersModel extends BaseModel {
   chats: ChatsModel[];
 
   @ManyToOne(() => MessagesModel, (message) => message.author)
-  messages: MessagesModel[];
+  messages: MessagesModel;
 
   @OneToMany(() => CommentsModel, (comment) => comment.author)
-  comments: CommentsModel;
+  postComments: CommentsModel[];
 }
