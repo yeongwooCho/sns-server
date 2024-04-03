@@ -27,13 +27,13 @@ export class CommentsController {
   ) {
     return this.commentsService.paginateComments(query, postId);
   }
-  //
-  // @Get(':commentId')
-  // @UseGuards(AccessTokenGuard)
-  // getComment(@Param('commentId', ParseIntPipe) commentId: number) {
-  //   return this.commentsService.getComment(commentId);
-  // }
-  //
+
+  @Get(':commentId')
+  @UseGuards(AccessTokenGuard)
+  getComment(@Param('commentId', ParseIntPipe) commentId: number) {
+    return this.commentsService.getCommentById(commentId);
+  }
+
   // @Post()
   // @UseGuards(AccessTokenGuard)
   // createComment(
