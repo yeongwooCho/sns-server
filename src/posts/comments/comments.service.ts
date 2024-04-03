@@ -4,6 +4,8 @@ import { CommentsModel } from './entity/comments.entity';
 import { Repository } from 'typeorm';
 import { PaginateCommentsDto } from './dto/paginate-comments.dto';
 import { CommonService } from '../../common/common.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { DEFAULT_COMMENT_FIND_OPTIONS } from './const/default-comment-find-options.const';
 
 @Injectable()
 export class CommentsService {
@@ -18,6 +20,7 @@ export class CommentsService {
       dto,
       this.commentsRepository,
       {
+        ...DEFAULT_COMMENT_FIND_OPTIONS,
         where: {
           // postId 로 필터링 된 comments 만 가져온다.
           post: {
@@ -31,6 +34,7 @@ export class CommentsService {
 
   async getCommentById(id: number) {
     const comment = await this.commentsRepository.findOne({
+      ...DEFAULT_COMMENT_FIND_OPTIONS,
       where: {
         id,
       },
@@ -43,10 +47,18 @@ export class CommentsService {
     return comment;
   }
 
-  // async createComment(dto: CreateCommentDto) {
-  //   return await this.commentsRepository.save(dto);
-  // }
-  //
+  async createComment(dto: CreateCommentDto, postId: number, userId: number) {
+    return await this.commentsRepository.save({
+      ...dto,
+      post: {
+        id: postId,
+      },
+      author: {
+        id: userId,
+      },
+    });
+  }
+
   // async updateComment(postId: number, commentId: number) {
   //   return await this.commentsRepository.save({
   //     id: commentId,
