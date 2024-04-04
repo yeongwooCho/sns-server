@@ -18,12 +18,14 @@ import {
   RefreshTokenGuard,
 } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { IsPublic } from "../common/decorator/is-public.decorator";
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('token/access')
+  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   createTokenAccess(@Headers('authorization') rawString: string) {
     const token = this.authService.extractTokenFromHeader(rawString, true);
@@ -36,6 +38,7 @@ export class AuthController {
   }
 
   @Post('token/refresh')
+  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   createTokenRefresh(@Headers('authorization') rawString: string) {
     const token = this.authService.extractTokenFromHeader(rawString, true);
@@ -48,6 +51,7 @@ export class AuthController {
   }
 
   @Post('login/email')
+  @IsPublic()
   @UseGuards(BasicTokenGuard)
   postLoginEmail(@Headers('authorization') rawToken: string, @Request() req) {
     // token은 현재 base64.encode(email:password) 상태이다.
@@ -59,6 +63,7 @@ export class AuthController {
   }
 
   @Post('register/email')
+  @IsPublic()
   postRegisterEmail(@Body() body: RegisterUserDto) {
     return this.authService.registerWithEmail(body);
   }
