@@ -1,20 +1,14 @@
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { Roles } from './decorator/roles.decorator';
+import { RolesEnum } from './entity/users.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Roles(RolesEnum.ADMIN)
   // @UseInterceptors(ClassSerializerInterceptor)
   /**
    * serialization(직렬화)

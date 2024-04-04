@@ -18,7 +18,7 @@ import {
   RefreshTokenGuard,
 } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { IsPublic } from "../common/decorator/is-public.decorator";
+import { IsPublic } from '../common/decorator/is-public.decorator';
 
 @Controller('auth')
 export class AuthController {

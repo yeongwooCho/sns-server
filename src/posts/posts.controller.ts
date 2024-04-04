@@ -46,7 +46,6 @@ export class PostsController {
 
   // 1) POST /posts/random
   @Post('random')
-  @IsPublic()
   async postPostsRandom(@User() user: UsersModel) {
     await this.postsService.generatePosts(user.id);
     return true;
@@ -54,6 +53,7 @@ export class PostsController {
 
   // 2) GET /posts/:id
   @Get(':id')
+  @IsPublic()
   getPost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.getPostById(id);
   }

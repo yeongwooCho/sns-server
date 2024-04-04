@@ -16,7 +16,6 @@ export class CommonController {
 
   @Post('image')
   @UseInterceptors(FileInterceptor('image'))
-  @UseGuards(AccessTokenGuard)
   postImage(@UploadedFile() file: Express.Multer.File) {
     // 여기까지 도착한 시점에 이미 module 에서
     // file filter 를 통과하고 multer 가 파일을 저장한 상태이다.
