@@ -6,6 +6,7 @@ import { PaginateCommentsDto } from './dto/paginate-comments.dto';
 import { CommonService } from '../../common/common.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { DEFAULT_COMMENT_FIND_OPTIONS } from './const/default-comment-find-options.const';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentsService {
@@ -59,12 +60,21 @@ export class CommentsService {
     });
   }
 
-  // async updateComment(postId: number, commentId: number) {
-  //   return await this.commentsRepository.save({
-  //     id: commentId,
-  //   });
-  // }
-  //
+  async updateComment(
+    userId: number,
+    commentId: number,
+    dto: UpdateCommentDto,
+  ) {
+    const preloadComment = await this.commentsRepository.preload({
+      id: commentId,
+      ...dto,
+    });
+
+    const newComment = await this.commentsRepository.save(preloadComment);
+
+    return newComment;
+  }
+
   // async deleteComment(postId: number, commentId: number) {
   //   return await this.commentsRepository.delete({
   //     id: commentId,

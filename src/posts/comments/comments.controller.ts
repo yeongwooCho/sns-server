@@ -16,6 +16,7 @@ import { PaginateCommentsDto } from './dto/paginate-comments.dto';
 import { AccessTokenGuard } from '../../auth/guard/bearer-token.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from '../../users/decorator/user.decorator';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('posts/:postId/comments')
 export class CommentsController {
@@ -46,16 +47,16 @@ export class CommentsController {
     return this.commentsService.createComment(body, postId, userId);
   }
 
-  // @Patch(':commentId')
-  // @UseGuards(AccessTokenGuard)
-  // updateComment(
-  //   @User('id') userId: number,
-  //   @Param('postId', ParseIntPipe) postId: number,
-  //   @Param('commentId', ParseIntPipe) commentId: number,
-  // ) {
-  //   return this.commentsService.updateComment(postId, commentId);
-  // }
-  //
+  @Patch(':commentId')
+  @UseGuards(AccessTokenGuard)
+  patchComment(
+    @User('id') userId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @Body() body: UpdateCommentDto,
+  ) {
+    return this.commentsService.updateComment(userId, commentId, body);
+  }
+
   // @Delete(':commentId')
   // @UseGuards(AccessTokenGuard)
   // deleteComment(
