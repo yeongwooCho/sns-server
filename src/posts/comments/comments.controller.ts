@@ -17,7 +17,8 @@ import { AccessTokenGuard } from '../../auth/guard/bearer-token.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from '../../users/decorator/user.decorator';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { IsPublic } from "../../common/decorator/is-public.decorator";
+import { IsPublic } from '../../common/decorator/is-public.decorator';
+import { IsCommentMineOrAdminGuard } from './guard/is-comment-mine-or-admin.guard';
 
 @Controller('posts/:postId/comments')
 export class CommentsController {
@@ -48,6 +49,7 @@ export class CommentsController {
   }
 
   @Patch(':commentId')
+  @UseGuards(IsCommentMineOrAdminGuard)
   patchComment(
     @User('id') userId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
@@ -57,6 +59,7 @@ export class CommentsController {
   }
 
   @Delete(':commentId')
+  @UseGuards(IsCommentMineOrAdminGuard)
   deleteComment(
     @User('id') userId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
