@@ -57,13 +57,12 @@ export class CommentsController {
     return this.commentsService.updateComment(userId, commentId, body);
   }
 
-  // @Delete(':commentId')
-  // @UseGuards(AccessTokenGuard)
-  // deleteComment(
-  //   @User('id') userId: number,
-  //   @Param('postId', ParseIntPipe) postId: number,
-  //   @Param('commentId', ParseIntPipe) commentId: number,
-  // ) {
-  //   return this.commentsService.deleteComment(postId, commentId);
-  // }
+  @Delete(':commentId')
+  @UseGuards(AccessTokenGuard)
+  deleteComment(
+    @User('id') userId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
+  ) {
+    return this.commentsService.deleteComment(userId, commentId);
+  }
 }

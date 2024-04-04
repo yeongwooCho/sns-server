@@ -65,6 +65,18 @@ export class CommentsService {
     commentId: number,
     dto: UpdateCommentDto,
   ) {
+    const comment = await this.commentsRepository.findOne({
+      where: {
+        id: commentId,
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(
+        `id: ${commentId} Comment는 존재하지 않습니다.`,
+      );
+    }
+
     const preloadComment = await this.commentsRepository.preload({
       id: commentId,
       ...dto,
@@ -75,9 +87,23 @@ export class CommentsService {
     return newComment;
   }
 
-  // async deleteComment(postId: number, commentId: number) {
-  //   return await this.commentsRepository.delete({
-  //     id: commentId,
-  //   });
-  // }
+  async deleteComment(userId: number, commentId: number) {
+    const comment = await this.commentsRepository.findOne({
+      where: {
+        id: commentId,
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(
+        `id: ${commentId} Comment는 존재하지 않습니다.`,
+      );
+    }
+
+    await this.commentsRepository.delete({
+      id: commentId,
+    });
+
+    return commentId;
+  }
 }
