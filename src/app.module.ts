@@ -13,7 +13,7 @@ import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entity/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
 import {
@@ -32,6 +32,7 @@ import { ChatsModel } from './chats/entity/chats.entity';
 import { MessagesModel } from './chats/messages/entity/messages.entity';
 import { CommentsModule } from './posts/comments/comments.module';
 import { CommentsModel } from './posts/comments/entity/comments.entity';
+import { RolesGuard } from './users/guard/roles.guard';
 
 @Module({
   imports: [
@@ -81,6 +82,10 @@ import { CommentsModel } from './posts/comments/entity/comments.entity';
       provide: APP_INTERCEPTOR,
       // class-transformer @Expose() 를 사용한 것에 대해 일괄 적용한다.
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })
