@@ -8,11 +8,9 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
 import { User } from '../users/decorator/user.decorator';
 import { RolesEnum, UsersModel } from '../users/entity/users.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -25,7 +23,7 @@ import { LogInterceptor } from '../common/interceptor/log.interceptor';
 import { TransactionInterceptor } from '../common/interceptor/transaction.interceptor';
 import { QueryRunner } from '../common/decorator/query-runner.decorator';
 import { Roles } from '../users/decorator/roles.decorator';
-import { RolesGuard } from '../users/guard/roles.guard';
+import { IsPublic } from '../common/decorator/is-public.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -38,6 +36,7 @@ export class PostsController {
   // 1) GET /posts
   @Get()
   @UseInterceptors(LogInterceptor)
+  @IsPublic()
   // @UseFilters(HttpExceptionFilter)
   getPosts(@Query() query: PaginatePostDto) {
     // throw new BadRequestException('테스트용 에러 발생');
@@ -47,7 +46,7 @@ export class PostsController {
 
   // 1) POST /posts/random
   @Post('random')
-  @UseGuards(AccessTokenGuard)
+  @IsPublic()
   async postPostsRandom(@User() user: UsersModel) {
     await this.postsService.generatePosts(user.id);
     return true;
@@ -61,7 +60,6 @@ export class PostsController {
 
   // 3) Post /posts
   @Post()
-  @UseGuards(AccessTokenGuard)
   @UseInterceptors(TransactionInterceptor)
   async postPost(
     @User('id') userId: number,
@@ -98,7 +96,6 @@ export class PostsController {
 
   // 5) DELETE /posts/:id
   @Delete(':id')
-  @UseGuards(AccessTokenGuard)
   @Roles(RolesEnum.ADMIN)
   deletePost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.deletePost(id);
