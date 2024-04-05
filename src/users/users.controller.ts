@@ -65,6 +65,11 @@ export class UsersController {
     return this.usersService.deleteUser(+id);
   }
 
+  @Get('follow/me')
+  getFollow(@User('id', ParseIntPipe) userId: number) {
+    return this.usersService.getFollowers(userId);
+  }
+
   @Post('follow/:id')
   async postFollow(
     @User('id') userId: number,

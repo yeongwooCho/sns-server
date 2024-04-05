@@ -91,6 +91,23 @@ export class UsersService {
     return id;
   }
 
+  async getFollowers(userId: number) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        followers: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('해당 유저가 존재하지 않습니다.');
+    }
+
+    return user.followers;
+  }
+
   async followUser(userId: number, targetId: number) {
     const user = await this.usersRepository.findOne({
       where: {
