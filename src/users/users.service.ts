@@ -90,4 +90,24 @@ export class UsersService {
 
     return id;
   }
+
+  async followUser(userId: number, targetId: number) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        followees: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('해당 유저가 존재하지 않습니다.');
+    }
+
+    await this.usersRepository.save({
+      ...user,
+      followees: [...user.followees, { id: targetId }],
+    });
+  }
 }

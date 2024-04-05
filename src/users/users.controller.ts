@@ -1,7 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Roles } from './decorator/roles.decorator';
 import { RolesEnum } from './entity/users.entity';
+import { User } from './decorator/user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -53,5 +63,15 @@ export class UsersController {
   @Delete(':id')
   deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(+id);
+  }
+
+  @Post('follow/:id')
+  async postFollow(
+    @User('id') userId: number,
+    @Param('id', ParseIntPipe) targetId: number,
+  ) {
+    await this.usersService.followUser(userId, targetId);
+
+    return true;
   }
 }
