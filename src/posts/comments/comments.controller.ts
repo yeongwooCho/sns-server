@@ -19,10 +19,17 @@ import { User } from '../../users/decorator/user.decorator';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { IsPublic } from '../../common/decorator/is-public.decorator';
 import { IsCommentMineOrAdminGuard } from './guard/is-comment-mine-or-admin.guard';
+import { TransactionInterceptor } from '../../common/interceptor/transaction.interceptor';
+import { QueryRunner } from '../../common/decorator/query-runner.decorator';
+import { QueryRunner as QR } from 'typeorm';
+import { PostsService } from '../posts.service';
 
 @Controller('posts/:postId/comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+  constructor(
+    private readonly commentsService: CommentsService,
+    private readonly postsService: PostsService,
+  ) {}
 
   @Get()
   @IsPublic()
@@ -40,12 +47,23 @@ export class CommentsController {
   }
 
   @Post()
-  createComment(
+  @UseInterceptors(TransactionInterceptor)
+  async postComment(
     @User('id') userId: number,
     @Param('postId', ParseIntPipe) postId: number,
     @Body() body: CreateCommentDto,
+    @QueryRunner() qr: QR,
   ) {
-    return this.commentsService.createComment(body, postId, userId);
+    const resp = await this.commentsService.createComment(
+      body,
+      postId,
+      userId,
+      qr,
+    );
+
+    await this.postsService.incrementCommentCount(postId, qr);
+
+    return resp;
   }
 
   @Patch(':commentId')
@@ -60,10 +78,21 @@ export class CommentsController {
 
   @Delete(':commentId')
   @UseGuards(IsCommentMineOrAdminGuard)
-  deleteComment(
+  @UseInterceptors(TransactionInterceptor)
+  async deleteComment(
     @User('id') userId: number,
+    @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
+    @QueryRunner() qr: QR,
   ) {
-    return this.commentsService.deleteComment(userId, commentId);
+    const resp = await this.commentsService.deleteComment(
+      userId,
+      commentId,
+      qr,
+    );
+
+    await this.postsService.decrementCommentCount(postId, qr);
+
+    return resp;
   }
 }

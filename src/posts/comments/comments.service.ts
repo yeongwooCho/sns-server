@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentsModel } from './entity/comments.entity';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { PaginateCommentsDto } from './dto/paginate-comments.dto';
 import { CommonService } from '../../common/common.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -15,6 +15,12 @@ export class CommentsService {
     private readonly commentsRepository: Repository<CommentsModel>,
     private readonly commonService: CommonService,
   ) {}
+
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<CommentsModel>(CommentsModel)
+      : this.commentsRepository;
+  }
 
   async paginateComments(dto: PaginateCommentsDto, postId: number) {
     return await this.commonService.paginate<CommentsModel>(
@@ -48,8 +54,15 @@ export class CommentsService {
     return comment;
   }
 
-  async createComment(dto: CreateCommentDto, postId: number, userId: number) {
-    return await this.commentsRepository.save({
+  async createComment(
+    dto: CreateCommentDto,
+    postId: number,
+    userId: number,
+    qr?: QueryRunner,
+  ) {
+    const commentsRepository = this.getRepository(qr);
+
+    return await commentsRepository.save({
       ...dto,
       post: {
         id: postId,
@@ -87,8 +100,10 @@ export class CommentsService {
     return newComment;
   }
 
-  async deleteComment(userId: number, commentId: number) {
-    const comment = await this.commentsRepository.findOne({
+  async deleteComment(userId: number, commentId: number, qr?: QueryRunner) {
+    const commentsRepository = this.getRepository(qr);
+
+    const comment = await commentsRepository.findOne({
       where: {
         id: commentId,
       },
@@ -100,7 +115,7 @@ export class CommentsService {
       );
     }
 
-    await this.commentsRepository.delete({
+    await commentsRepository.delete({
       id: commentId,
     });
 

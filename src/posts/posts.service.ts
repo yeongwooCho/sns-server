@@ -33,6 +33,12 @@ export class PostsService {
     private readonly imageRepository: Repository<ImageModel>,
   ) {}
 
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<PostsModel>(PostsModel)
+      : this.postsRepository;
+  }
+
   // 모든 post 를 가져오는 기능을 paginate 로 대체 완료
   async getAllPosts() {
     return this.postsRepository.find({
@@ -80,12 +86,6 @@ export class PostsService {
     }
 
     return post;
-  }
-
-  getRepository(qr?: QueryRunner) {
-    return qr
-      ? qr.manager.getRepository<PostsModel>(PostsModel)
-      : this.postsRepository;
   }
 
   async createPost(authorId: number, postDto: CreatePostDto, qr?: QueryRunner) {
@@ -163,5 +163,29 @@ export class PostsService {
         author: true,
       },
     });
+  }
+
+  async incrementCommentCount(postId: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    await repository.increment(
+      {
+        id: postId,
+      },
+      'commentCount',
+      1,
+    );
+  }
+
+  async decrementCommentCount(postId: number, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    await repository.decrement(
+      {
+        id: postId,
+      },
+      'commentCount',
+      1,
+    );
   }
 }
