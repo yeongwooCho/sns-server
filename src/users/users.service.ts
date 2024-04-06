@@ -110,6 +110,7 @@ export class UsersService {
         followee: {
           id: userId,
         },
+        isConfirmed: true,
       },
       relations: {
         follower: true,
@@ -128,6 +129,35 @@ export class UsersService {
       followee: {
         id: targetId,
       },
+    });
+
+    return true;
+  }
+
+  async confirmFollow(userId: number, followerId: number) {
+    const existing = await this.userFollowersRepository.findOne({
+      where: {
+        follower: {
+          id: followerId,
+        },
+        followee: {
+          id: userId,
+        },
+      },
+      relations: {
+        // 아래 정보도 같이 불러온다.
+        follower: true,
+        followee: true,
+      },
+    });
+
+    if (!existing) {
+      throw new BadRequestException('존재하지 않는 팔로우 요청입니다.');
+    }
+
+    await this.userFollowersRepository.save({
+      ...existing,
+      isConfirmed: true,
     });
 
     return true;

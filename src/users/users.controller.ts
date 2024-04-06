@@ -79,4 +79,14 @@ export class UsersController {
 
     return true;
   }
+
+  @Patch('follow/:id/confirm')
+  async patchFollowConfirm(
+    @User('id') userId: number,
+    @Param('id', ParseIntPipe) followerId: number,
+  ) {
+    await this.usersService.confirmFollow(userId, followerId);
+
+    return true;
+  }
 }
