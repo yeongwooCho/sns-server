@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { UsersModel } from './entity/users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserFollowersModel } from './entity/user-followers.entity';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { ImageModel } from '../common/entity/image.entity';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +15,18 @@ export class UsersService {
     @InjectRepository(UserFollowersModel)
     private readonly userFollowersRepository: Repository<UserFollowersModel>,
   ) {}
+
+  getUsersRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<UsersModel>(UsersModel)
+      : this.usersRepository;
+  }
+
+  getUserFollowersRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<UserFollowersModel>(UserFollowersModel)
+      : this.userFollowersRepository;
+  }
 
   async getAllUsers() {
     return await this.usersRepository.find();
@@ -132,8 +145,10 @@ export class UsersService {
     }));
   }
 
-  async followUser(userId: number, targetId: number) {
-    const result = await this.userFollowersRepository.save({
+  async followUser(userId: number, targetId: number, qr?: QueryRunner) {
+    const userFollowersRepository = this.getUserFollowersRepository(qr);
+
+    await userFollowersRepository.save({
       follower: {
         id: userId,
       },
@@ -145,8 +160,10 @@ export class UsersService {
     return true;
   }
 
-  async confirmFollow(userId: number, followerId: number) {
-    const existing = await this.userFollowersRepository.findOne({
+  async confirmFollow(userId: number, followerId: number, qr?: QueryRunner) {
+    const userFollowersRepository = this.getUserFollowersRepository(qr);
+
+    const existing = await userFollowersRepository.findOne({
       where: {
         follower: {
           id: followerId,
@@ -166,7 +183,7 @@ export class UsersService {
       throw new BadRequestException('존재하지 않는 팔로우 요청입니다.');
     }
 
-    await this.userFollowersRepository.save({
+    await userFollowersRepository.save({
       ...existing,
       isConfirmed: true,
     });
@@ -174,8 +191,10 @@ export class UsersService {
     return true;
   }
 
-  async unfollowUser(followerId: number, followeeId: number) {
-    await this.userFollowersRepository.delete({
+  async unfollowUser(followerId: number, followeeId: number, qr?: QueryRunner) {
+    const userFollowersRepository = this.getUserFollowersRepository(qr);
+
+    await userFollowersRepository.delete({
       follower: {
         id: followerId,
       },
