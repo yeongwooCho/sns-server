@@ -102,6 +102,8 @@ export class UsersController {
   ) {
     await this.usersService.confirmFollow(userId, followerId, qr);
 
+    await this.usersService.incrementFollowerCount(userId, qr);
+
     return true;
   }
 
@@ -113,6 +115,8 @@ export class UsersController {
     @Param('id', ParseIntPipe) followeeId: number,
   ) {
     await this.usersService.unfollowUser(userId, followeeId, qr);
+
+    await this.usersService.decrementFollowerCount(userId, qr);
 
     return true;
   }

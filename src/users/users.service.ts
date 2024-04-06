@@ -205,4 +205,16 @@ export class UsersService {
 
     return true;
   }
+
+  async incrementFollowerCount(userId: number, qr?: QueryRunner) {
+    const usersRepository = this.getUsersRepository(qr);
+
+    await usersRepository.increment({ id: userId }, 'followerCount', 1);
+  }
+
+  async decrementFollowerCount(userId: number, qr?: QueryRunner) {
+    const usersRepository = this.getUsersRepository(qr);
+
+    await usersRepository.decrement({ id: userId }, 'followerCount', 1);
+  }
 }
