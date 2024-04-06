@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Roles } from './decorator/roles.decorator';
@@ -66,8 +69,12 @@ export class UsersController {
   }
 
   @Get('follow/me')
-  getFollow(@User('id', ParseIntPipe) userId: number) {
-    return this.usersService.getFollowers(userId);
+  getFollow(
+    @User('id', ParseIntPipe) userId: number,
+    @Query('includeNotConfirmed', new DefaultValuePipe(false), ParseBoolPipe)
+    includeNotConfirmed: boolean,
+  ) {
+    return this.usersService.getFollowers(userId, includeNotConfirmed);
   }
 
   @Post('follow/:id')

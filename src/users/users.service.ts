@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { UsersModel } from './entity/users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserFollowersModel } from './entity/user-followers.entity';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 
 @Injectable()
 export class UsersService {
@@ -95,7 +96,7 @@ export class UsersService {
     return id;
   }
 
-  async getFollowers(userId: number): Promise<UsersModel[]> {
+  async getFollowers(userId: number, includeNotConfirmed?: boolean) {
     /**
      * id: number;
      * follower: UsersModel;
@@ -105,20 +106,30 @@ export class UsersService {
      * updatedAt: Date;
      * 우리는 followee 를 userId로 선택한 사람들을 찾아야한다.
      */
-    const result = await this.userFollowersRepository.find({
-      where: {
-        followee: {
-          id: userId,
-        },
-        isConfirmed: true,
+    const where: FindOptionsWhere<UserFollowersModel> = {
+      followee: {
+        id: userId,
       },
+    };
+
+    if (!includeNotConfirmed) {
+      where.isConfirmed = true;
+    }
+
+    const result = await this.userFollowersRepository.find({
+      where: where,
       relations: {
         follower: true,
         followee: true,
       },
     });
 
-    return result.map((item) => item.follower);
+    return result.map((item) => ({
+      id: item.follower.id,
+      nickname: item.follower.nickname,
+      email: item.follower.email,
+      isConfirmed: item.isConfirmed,
+    }));
   }
 
   async followUser(userId: number, targetId: number) {
