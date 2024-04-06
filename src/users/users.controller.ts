@@ -96,4 +96,14 @@ export class UsersController {
 
     return true;
   }
+
+  @Delete('follow/:id')
+  async deleteFollow(
+    @User('id') userId: number,
+    @Param('id', ParseIntPipe) followeeId: number,
+  ) {
+    await this.usersService.unfollowUser(userId, followeeId);
+
+    return true;
+  }
 }

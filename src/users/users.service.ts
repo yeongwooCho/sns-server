@@ -173,4 +173,17 @@ export class UsersService {
 
     return true;
   }
+
+  async unfollowUser(followerId: number, followeeId: number) {
+    await this.userFollowersRepository.delete({
+      follower: {
+        id: followerId,
+      },
+      followee: {
+        id: followeeId,
+      },
+    });
+
+    return true;
+  }
 }
