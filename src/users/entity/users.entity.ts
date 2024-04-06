@@ -110,4 +110,14 @@ export class UsersModel extends BaseModel {
     (userFollowers) => userFollowers.followee,
   )
   followees: UserFollowersModel[];
+
+  @Column({
+    default: 0,
+  })
+  followerCount: number;
+
+  @Column({
+    default: 0,
+  })
+  followeeCount: number;
 }
