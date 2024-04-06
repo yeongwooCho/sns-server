@@ -16,6 +16,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { ChatsModel } from '../../chats/entity/chats.entity';
 import { MessagesModel } from '../../chats/messages/entity/messages.entity';
 import { CommentsModel } from '../../posts/comments/entity/comments.entity';
+import { UserFollowersModel } from './user-followers.entity';
 
 export enum RolesEnum {
   USER = 'USER',
@@ -97,11 +98,16 @@ export class UsersModel extends BaseModel {
   postComments: CommentsModel[];
 
   // 팔로우 하고 있는 유저
-  @ManyToMany(() => UsersModel, (user) => user.followees)
-  @JoinTable()
-  followers: UsersModel[];
+  @OneToMany(
+    () => UserFollowersModel,
+    (userFollowers) => userFollowers.follower,
+  )
+  followers: UserFollowersModel[];
 
   // followers에 의해 follow를 받는 유저
-  @ManyToMany(() => UsersModel, (user) => user.followers)
-  followees: UsersModel[];
+  @OneToMany(
+    () => UserFollowersModel,
+    (userFollowers) => userFollowers.followee,
+  )
+  followees: UserFollowersModel[];
 }
