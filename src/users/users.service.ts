@@ -2,12 +2,16 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { UsersModel } from './entity/users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserFollowersModel } from './entity/user-followers.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UsersModel)
     private readonly usersRepository: Repository<UsersModel>,
+
+    @InjectRepository(UserFollowersModel)
+    private readonly userFollowersRepository: Repository<UserFollowersModel>,
   ) {}
 
   async getAllUsers() {
@@ -91,40 +95,41 @@ export class UsersService {
     return id;
   }
 
-  async getFollowers(userId: number) {
-    const user = await this.usersRepository.findOne({
+  async getFollowers(userId: number): Promise<UsersModel[]> {
+    /**
+     * id: number;
+     * follower: UsersModel;
+     * followee: UsersModel;
+     * isConfirmed: boolean;
+     * createdAt: Date;
+     * updatedAt: Date;
+     * 우리는 followee 를 userId로 선택한 사람들을 찾아야한다.
+     */
+    const result = await this.userFollowersRepository.find({
       where: {
-        id: userId,
+        followee: {
+          id: userId,
+        },
       },
       relations: {
-        followers: true,
+        follower: true,
+        followee: true,
       },
     });
 
-    if (!user) {
-      throw new BadRequestException('해당 유저가 존재하지 않습니다.');
-    }
-
-    return user.followers;
+    return result.map((item) => item.follower);
   }
 
   async followUser(userId: number, targetId: number) {
-    const user = await this.usersRepository.findOne({
-      where: {
+    const result = await this.userFollowersRepository.save({
+      follower: {
         id: userId,
       },
-      relations: {
-        followees: true,
+      followee: {
+        id: targetId,
       },
     });
 
-    if (!user) {
-      throw new BadRequestException('해당 유저가 존재하지 않습니다.');
-    }
-
-    await this.usersRepository.save({
-      ...user,
-      followees: [...user.followees, { id: targetId }],
-    });
+    return true;
   }
 }
